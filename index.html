@@ -1,160 +1,175 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>上桂動物病院 受付フォーム</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap">
   <style>
     body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: #f4f9fd;
-      margin: 0;
-      padding: 0;
+      font-family: sans-serif;
+      background: #f9fbfc;
+      padding: 2em;
       color: #333;
     }
-    header {
-      background-color: #ffffff;
-      padding: 1rem;
-      text-align: center;
-      position: relative;
-      border-bottom: 3px solid #0099cc;
-    }
-    header img.left, header img.right {
-      width: 50px;
-      height: auto;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    header img.left {
-      left: 1rem;
-    }
-    header img.right {
-      right: 1rem;
-    }
     h1 {
-      color: #007bbd;
-      font-size: 1.8rem;
-      margin: 0;
+      color: #0066cc;
+      text-align: center;
+      margin-bottom: 1em;
     }
-    .container {
-      max-width: 480px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     label {
-      display: block;
-      margin-bottom: 0.2rem;
       font-weight: bold;
+      display: block;
+      margin-top: 1em;
     }
     input[type="text"], select {
       width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-      border-radius: 6px;
+      padding: 0.6em;
+      margin-top: 0.4em;
       border: 1px solid #ccc;
-      font-size: 1rem;
+      border-radius: 5px;
     }
-    .time-buttons {
+    .button-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      gap: 10px;
+      margin-top: 0.5em;
     }
-    .time-buttons button {
-      flex: 1 1 30%;
-      background-color: #007bbd;
-      color: white;
+    .button-group button {
+      flex: 1 1 45%;
+      padding: 0.8em;
       border: none;
-      padding: 0.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
+      border-radius: 6px;
+      background-color: #0066cc;
+      color: white;
+      font-size: 1em;
       cursor: pointer;
     }
-    .time-buttons button.active {
-      background-color: #ff7f2a;
+    .button-group button.selected {
+      background-color: #ff6600;
     }
-    .section-title {
-      font-weight: bold;
-      color: #007bbd;
-      margin-top: 1rem;
+    .section {
+      margin-top: 1em;
     }
-    button[type="submit"] {
-      background-color: #ff7f2a;
-      color: white;
-      padding: 0.75rem;
-      width: 100%;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+    .hidden {
+      display: none;
+    }
+    .notice {
+      background: #e6f2ff;
+      border-left: 5px solid #0066cc;
+      padding: 0.5em;
+      font-size: 0.9em;
+      margin-top: 0.5em;
+    }
+    .submit-button {
+      background-color: #28a745;
+      font-size: 1.2em;
+      margin-top: 1.5em;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img class="left" src="./images/logo-left.png" alt="左ロゴ">
-    <h1>上桂動物病院 受付フォーム</h1>
-    <img class="right" src="./images/logo-right.png" alt="右ロゴ">
-  </header>
-  <div class="container">
-    <form id="checkin-form">
-      <label for="owner">飼い主の名字</label>
-      <input type="text" id="owner" name="owner" required>
+  <h1>上桂動物病院 受付フォーム</h1>
+  <form id="checkin-form">
+    <label>受付時間帯</label>
+    <div class="button-group" id="time-buttons"></div>
 
-      <label for="pet">動物の名前</label>
-      <input type="text" id="pet" name="pet" required>
+    <label>ご家族様のご名字</label>
+    <input type="text" id="owner-name" required />
 
-      <label for="id">診察券番号（わかれば）</label>
-      <input type="text" id="id" name="id">
+    <label>動物さんのお名前</label>
+    <input type="text" id="pet-name" required />
 
-      <div class="section-title">予約時間帯</div>
-      <div id="time-group" class="time-buttons"></div>
+    <label>診察券番号</label>
+    <input type="text" id="card-number" placeholder="数字が分かる場合のみ記入" />
+    <div class="button-group">
+      <button type="button" onclick="selectCardOption('unknown')">すでにあるが不明</button>
+      <button type="button" onclick="selectCardOption('new')">初診でまだ番号が無い</button>
+    </div>
 
-      <input type="hidden" name="time" id="time" required>
+    <label>保険証</label>
+    <div class="notice">※保険証は横の保険証入れに入れてください</div>
+    <div class="button-group">
+      <button type="button" onclick="selectInsurance('あり')">あり</button>
+      <button type="button" onclick="selectInsurance('なし')">なし</button>
+    </div>
 
-      <button type="submit">受付する</button>
-    </form>
-  </div>
+    <button type="submit" class="submit-button">受付する</button>
+  </form>
 
   <script>
-    const form = document.getElementById('checkin-form');
-    const timeGroup = document.getElementById('time-group');
-    const timeInput = document.getElementById('time');
+    const timeButtons = document.getElementById("time-buttons");
+    const form = document.getElementById("checkin-form");
+    let selectedTime = "";
+    let cardOption = "";
+    let insurance = "";
 
-    const morningTimes = ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30'];
-    const afternoonTimes = ['16:30', '17:00', '17:30', '18:00'];
+    const timeSlots = [
+      "9:00〜9:30", "9:30〜10:00", "10:00〜10:30", "10:30〜11:00", "11:00〜11:30",
+      "16:30〜17:00", "17:00〜17:30", "17:30〜18:00", "18:00〜18:30"
+    ];
 
-    function updateTimeButtons() {
-      const now = new Date();
-      const hour = now.getHours();
-      const isAfternoon = hour >= 14;
+    const now = new Date();
+    const hour = now.getHours();
+    const isAM = hour < 14;
 
-      const times = isAfternoon ? afternoonTimes : morningTimes;
-      timeGroup.innerHTML = '';
-      times.forEach(t => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = t;
-        btn.onclick = () => {
-          document.querySelectorAll('.time-buttons button').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          timeInput.value = t;
-        };
-        timeGroup.appendChild(btn);
-      });
-    }
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('送信されました（実際の送信処理は未実装）');
+    const filteredTimes = timeSlots.filter(t => {
+      const h = parseInt(t.split(":")[0]);
+      return isAM ? h < 14 : h >= 14;
     });
 
-    updateTimeButtons();
+    filteredTimes.forEach(time => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = time;
+      btn.onclick = () => {
+        selectedTime = time;
+        [...timeButtons.children].forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      };
+      timeButtons.appendChild(btn);
+    });
+
+    function selectCardOption(option) {
+      cardOption = option;
+      document.querySelectorAll("[onclick^='selectCardOption']").forEach(b => b.classList.remove("selected"));
+      event.target.classList.add("selected");
+    }
+
+    function selectInsurance(option) {
+      insurance = option;
+      document.querySelectorAll("[onclick^='selectInsurance']").forEach(b => b.classList.remove("selected"));
+      event.target.classList.add("selected");
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const owner = document.getElementById("owner-name").value.trim();
+      const pet = document.getElementById("pet-name").value.trim();
+      const card = document.getElementById("card-number").value.trim();
+
+      const data = {
+        time: selectedTime,
+        owner,
+        pet,
+        card: card || cardOption,
+        insurance
+      };
+
+      const logs = JSON.parse(localStorage.getItem("reception-logs") || "[]");
+      logs.push({ ...data, timestamp: new Date().toISOString() });
+      localStorage.setItem("reception-logs", JSON.stringify(logs));
+      alert("受付が完了しました。");
+      form.reset();
+      location.reload();
+    });
   </script>
 </body>
 </html>
