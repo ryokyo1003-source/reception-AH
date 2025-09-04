@@ -1,99 +1,160 @@
-<!-- index.html - 受付フォーム -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>上桂動物病院 受付フォーム</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #f4f9fd;
       margin: 0;
-      padding: 1em;
-      font-size: 1.2em;
-      background: #f8f8f8;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background-color: #ffffff;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      border-bottom: 3px solid #0099cc;
+    }
+    header img.left, header img.right {
+      width: 50px;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    header img.left {
+      left: 1rem;
+    }
+    header img.right {
+      right: 1rem;
+    }
+    h1 {
+      color: #007bbd;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    .container {
+      max-width: 480px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     label {
       display: block;
-      margin-top: 1em;
+      margin-bottom: 0.2rem;
+      font-weight: bold;
     }
-    input, select, button {
-      font-size: 1.2em;
+    input[type="text"], select {
       width: 100%;
-      padding: 0.5em;
-      margin-top: 0.5em;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
     }
-    button {
-      background: #2c3e50;
+    .time-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .time-buttons button {
+      flex: 1 1 30%;
+      background-color: #007bbd;
       color: white;
       border: none;
-      margin-top: 1.5em;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .time-buttons button.active {
+      background-color: #ff7f2a;
+    }
+    .section-title {
+      font-weight: bold;
+      color: #007bbd;
+      margin-top: 1rem;
+    }
+    button[type="submit"] {
+      background-color: #ff7f2a;
+      color: white;
+      padding: 0.75rem;
+      width: 100%;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>上桂動物病院 受付フォーム</h1>
+  <header>
+    <img class="left" src="./images/logo-left.png" alt="左ロゴ">
+    <h1>上桂動物病院 受付フォーム</h1>
+    <img class="right" src="./images/logo-right.png" alt="右ロゴ">
+  </header>
+  <div class="container">
+    <form id="checkin-form">
+      <label for="owner">飼い主の名字</label>
+      <input type="text" id="owner" name="owner" required>
 
-  <label>予約時間帯
-    <select id="time">
-      <option value="">選択してください</option>
-      <option>09:00〜09:30</option>
-      <option>09:30〜10:00</option>
-      <option>10:00〜10:30</option>
-      <option>10:30〜11:00</option>
-      <option>11:00〜11:30</option>
-      <option>11:30〜12:00</option>
-      <option>16:30〜17:00</option>
-      <option>17:00〜17:30</option>
-      <option>17:30〜18:00</option>
-      <option>18:00〜18:30</option>
-    </select>
-  </label>
+      <label for="pet">動物の名前</label>
+      <input type="text" id="pet" name="pet" required>
 
-  <label>飼い主の苗字
-    <input id="owner" type="text" />
-  </label>
+      <label for="id">診察券番号（わかれば）</label>
+      <input type="text" id="id" name="id">
 
-  <label>動物の名前
-    <input id="pet" type="text" />
-  </label>
+      <div class="section-title">予約時間帯</div>
+      <div id="time-group" class="time-buttons"></div>
 
-  <label>診察券番号（任意）
-    <input id="card" type="text" />
-  </label>
+      <input type="hidden" name="time" id="time" required>
 
-  <label>保険証提出
-    <select id="insurance">
-      <option value="">選択してください</option>
-      <option>提出した</option>
-      <option>提出していない</option>
-    </select>
-  </label>
-
-  <button onclick="submitForm()">受付する</button>
+      <button type="submit">受付する</button>
+    </form>
+  </div>
 
   <script>
-    async function submitForm() {
-      const data = {
-        timestamp: new Date().toISOString(),
-        time: document.getElementById("time").value,
-        owner: document.getElementById("owner").value,
-        pet: document.getElementById("pet").value,
-        card: document.getElementById("card").value,
-        insurance: document.getElementById("insurance").value
-      };
+    const form = document.getElementById('checkin-form');
+    const timeGroup = document.getElementById('time-group');
+    const timeInput = document.getElementById('time');
 
-      const res = await fetch('data.json');
-      const existing = await res.json().catch(() => []);
+    const morningTimes = ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30'];
+    const afternoonTimes = ['16:30', '17:00', '17:30', '18:00'];
 
-      const updated = [...existing, data];
+    function updateTimeButtons() {
+      const now = new Date();
+      const hour = now.getHours();
+      const isAfternoon = hour >= 14;
 
-      // GitHub Pagesでは書き込み不可。本来はFirebaseやGitHub API経由で保存します。
-      alert("受付情報を記録しました（仮保存）\n一覧ページで確認できます");
-      localStorage.setItem("reception_data", JSON.stringify(updated));
-
-      location.reload();
+      const times = isAfternoon ? afternoonTimes : morningTimes;
+      timeGroup.innerHTML = '';
+      times.forEach(t => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = t;
+        btn.onclick = () => {
+          document.querySelectorAll('.time-buttons button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          timeInput.value = t;
+        };
+        timeGroup.appendChild(btn);
+      });
     }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('送信されました（実際の送信処理は未実装）');
+    });
+
+    updateTimeButtons();
   </script>
 </body>
 </html>
