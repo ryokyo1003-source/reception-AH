@@ -1,209 +1,189 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>上桂動物病院 受付フォーム</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      background: linear-gradient(to bottom, #f9fcff, #f1f7ff);
-      color: #333;
+      background-color: #f5f8fc;
       padding: 20px;
+      color: #333;
     }
 
     h1 {
       text-align: center;
       font-size: 2rem;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    .section {
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin: 10px 0 5px;
+      margin-bottom: 5px;
       font-weight: bold;
     }
 
     input[type="text"] {
       width: 100%;
-      font-size: 1.3rem;
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      font-size: 1.2rem;
+      padding: 10px;
       margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     .button-group {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
-    .button-group button {
-      padding: 14px 18px;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 12px;
-      background-color: #e0f0ff;
-      color: #004080;
+    .selectable-button {
+      flex: 1 1 30%;
+      padding: 10px;
+      background-color: white;
+      border: 2px solid #007bff;
+      color: #007bff;
+      font-weight: bold;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      transition: all 0.2s ease-in-out;
+      text-align: center;
+      transition: 0.3s;
     }
 
-    .button-group button:hover {
-      transform: scale(1.05);
-    }
-
-    .button-group button.selected {
+    .selectable-button.selected {
       background-color: #007bff;
       color: white;
     }
 
-    #submitBtn {
-      display: block;
+    .submit-button {
       width: 100%;
-      background-color: #FF8C42;
+      font-size: 1.4rem;
+      padding: 15px;
+      background-color: orange;
       color: white;
       border: none;
-      padding: 20px;
-      font-size: 1.6rem;
-      border-radius: 14px;
+      border-radius: 10px;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 40px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      transition: background-color 0.3s, transform 0.2s;
     }
 
-    #submitBtn:hover {
-      background-color: #e67300;
-      transform: translateY(-2px);
-    }
-
-    .note {
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 10px;
-    }
-
-    .section {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    @media (max-width: 480px) {
+      .selectable-button {
+        flex: 1 1 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <h1>上桂動物病院 受付フォーム</h1>
 
-  <h1 style="color: black;">上桂動物病院 受付フォーム</h1>
-
-  <div class="section">
-    <label for="owner">ご家族様のご名字</label>
-    <input type="text" id="owner" placeholder="例）山田">
-  </div>
-
-  <div class="section">
-    <label for="pet">動物さんのお名前</label>
-    <input type="text" id="pet" placeholder="例）ポチ">
-  </div>
-
-  <div class="section">
-    <label for="id">診察券番号</label>
-    <div class="note">※わかる場合のみご記入ください</div>
-    <input type="text" id="id" placeholder="例）12345">
-    <div class="button-group" id="idButtons">
-      <button data-id="不明">診察券番号が不明</button>
-      <button data-id="初診">初診でまだ番号が無い</button>
+  <form id="receptionForm">
+    <div class="section">
+      <label for="owner">ご家族様のご名字</label>
+      <input type="text" id="owner" name="owner" required />
     </div>
-  </div>
 
-  <div class="section">
-    <label>ご予約時間帯</label>
-    <div class="button-group" id="timeButtons">
-      <!-- JSで自動挿入 -->
+    <div class="section">
+      <label for="pet">動物さんのお名前</label>
+      <input type="text" id="pet" name="pet" required />
     </div>
-    <div class="button-group">
-      <button data-time="予約なし">予約なし</button>
-    </div>
-  </div>
 
-  <div class="section">
-    <label>保険証 <span class="note">※お持ちの場合は受付の保険証入れに入れてください</span></label>
-    <div class="button-group" id="insuranceButtons">
-      <button data-insurance="あり">保険証あり</button>
-      <button data-insurance="なし">保険証なし</button>
+    <div class="section">
+      <label>診察券番号</label>
+      <input type="text" id="id" name="id" placeholder="診察券番号がわかる方のみご記入ください" />
+      <div class="button-group">
+        <div class="selectable-button" data-id="不明">番号は不明</div>
+        <div class="selectable-button" data-id="初診">初診です</div>
+      </div>
     </div>
-  </div>
 
-  <button id="submitBtn">受付する</button>
+    <div class="section">
+      <label>ご予約時間帯</label>
+      <div class="button-group" id="timeButtons">
+        <!-- JavaScriptでボタン生成 -->
+      </div>
+      <div class="selectable-button" data-time="予約なし">予約なし</div>
+    </div>
+
+    <div class="section">
+      <label>保険証 <span style="font-weight:normal;">※お持ちの場合は受付の保険証入れに入れてください</span></label>
+      <div class="button-group">
+        <div class="selectable-button" data-insurance="あり">保険証あり</div>
+        <div class="selectable-button" data-insurance="なし">保険証なし</div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-button">受付する</button>
+  </form>
 
   <script>
-    const timeButtonsDiv = document.getElementById("timeButtons");
+    // 時間帯ボタン自動生成（午前・午後）
+    const timeButtonsContainer = document.getElementById('timeButtons');
     const nowHour = new Date().getHours();
-    const timeRanges = [];
 
-    if (nowHour < 14) {
-      for (let h = 9; h <= 11; h++) {
-        timeRanges.push(`${h}:00~${h}:30`, `${h}:30~${h + 1}:00`);
+    const times = [
+      "09:00~09:30", "09:30~10:00", "10:00~10:30", "10:30~11:00", "11:00~11:30", "11:30~12:00",
+      "16:30~17:00", "17:00~17:30", "17:30~18:00", "18:00~18:30"
+    ];
+
+    times.forEach(time => {
+      const isMorning = time.startsWith("0") || time.startsWith("1");
+      const hour = parseInt(time.split(":")[0]);
+      if ((nowHour < 14 && hour < 14) || (nowHour >= 14 && hour >= 14)) {
+        const btn = document.createElement("div");
+        btn.className = "selectable-button";
+        btn.dataset.time = time;
+        btn.textContent = time;
+        timeButtonsContainer.appendChild(btn);
       }
-    } else {
-      timeRanges.push("16:30~17:00", "17:00~17:30", "17:30~18:00", "18:00~18:30");
-    }
-
-    timeRanges.forEach(t => {
-      const btn = document.createElement("button");
-      btn.textContent = t;
-      btn.dataset.time = t;
-      btn.addEventListener("click", () => selectButton(btn, "time"));
-      timeButtonsDiv.appendChild(btn);
     });
 
-    function selectButton(btn, type) {
-      const group = btn.parentElement;
-      group.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-    }
+    // ボタンの選択状態制御
+    document.addEventListener("click", function(event) {
+      if (event.target.classList.contains("selectable-button")) {
+        const group = event.target.parentElement;
+        Array.from(group.children).forEach(btn => btn.classList.remove("selected"));
+        event.target.classList.add("selected");
+      }
+    });
 
-    document.querySelectorAll("#idButtons button").forEach(btn =>
-      btn.addEventListener("click", () => selectButton(btn, "id"))
-    );
+    // 保存処理
+    document.getElementById("receptionForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const now = new Date();
+      const timestamp = now.toLocaleString("ja-JP");
 
-    document.querySelectorAll("#insuranceButtons button").forEach(btn =>
-      btn.addEventListener("click", () => selectButton(btn, "insurance"))
-    );
-
-    document.getElementById("submitBtn").addEventListener("click", () => {
       const owner = document.getElementById("owner").value;
       const pet = document.getElementById("pet").value;
-      const id = document.getElementById("id").value || document.querySelector("#idButtons .selected")?.dataset.id || "";
-      const time = document.querySelector("#timeButtons .selected")?.dataset.time ||
-                   document.querySelector('[data-time="予約なし"]')?.classList.contains("selected") ? "予約なし" : "";
-      const insurance = document.querySelector("#insuranceButtons .selected")?.dataset.insurance || "";
 
-      if (!owner || !pet || !time) {
-        alert("ご名字・お名前・時間帯は必須です");
-        return;
-      }
+      const idInput = document.getElementById("id").value;
+      const idSelected = document.querySelector('[data-id].selected');
+      const id = idInput || (idSelected ? idSelected.dataset.id : "");
 
-      const entry = {
-        timestamp: new Date().toLocaleString(),
-        owner, pet, id, time, insurance
-      };
+      const timeSelected = document.querySelector('[data-time].selected');
+      const time = timeSelected ? timeSelected.dataset.time : "";
 
-      const data = JSON.parse(localStorage.getItem("receptionList") || "[]");
-      data.push(entry);
-      localStorage.setItem("receptionList", JSON.stringify(data));
+      const insuranceSelected = document.querySelector('[data-insurance].selected');
+      const insurance = insuranceSelected ? insuranceSelected.dataset.insurance : "";
+
+      const entry = { timestamp, owner, pet, id, time, insurance };
+
+      const list = JSON.parse(localStorage.getItem("receptionList") || "[]");
+      list.push(entry);
+      localStorage.setItem("receptionList", JSON.stringify(list));
 
       alert("受付が完了しました！");
-      document.querySelectorAll("input").forEach(i => i.value = "");
-      document.querySelectorAll("button.selected").forEach(b => b.classList.remove("selected"));
+      this.reset();
+      document.querySelectorAll(".selectable-button").forEach(btn => btn.classList.remove("selected"));
     });
   </script>
-
 </body>
 </html>
