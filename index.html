@@ -152,9 +152,7 @@
         timeRanges.push(`${h}:00~${h}:30`, `${h}:30~${h + 1}:00`);
       }
     } else {
-      for (let h = 16; h < 18; h++) {
-        timeRanges.push(`${h}:30~${h + 1}:00`);
-      }
+      timeRanges.push("16:30~17:00", "17:00~17:30", "17:30~18:00", "18:00~18:30");
     }
 
     timeRanges.forEach(t => {
