@@ -1,67 +1,97 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>受付一覧｜上桂動物病院</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>受付一覧 - 上桂動物病院</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 1em;
-      font-size: 1em;
-      background: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #f5f8fc;
+      padding: 20px;
+      color: #333;
     }
+
     h1 {
-      font-size: 1.5em;
-      margin-bottom: 1em;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
     }
+
     th, td {
-      padding: 0.5em;
-      border: 1px solid #ccc;
-      text-align: left;
+      padding: 14px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
     }
+
     th {
-      background: #eee;
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fbff;
+    }
+
+    .refreshing {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 15px;
     }
   </style>
 </head>
 <body>
-  <h1>受付一覧（最新順）</h1>
-  <table id="list">
+  <h1>受付一覧（上桂動物病院）</h1>
+  <div class="refreshing">最新の受付情報を自動更新しています...</div>
+  <table id="receptionTable">
     <thead>
       <tr>
-        <th>受付時刻</th>
-        <th>時間帯</th>
-        <th>飼い主</th>
-        <th>動物名</th>
+        <th>受付時間</th>
+        <th>ご家族様のご名字</th>
+        <th>動物さんのお名前</th>
         <th>診察券番号</th>
+        <th>ご予約時間帯</th>
         <th>保険証</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+      <!-- JavaScriptで表示 -->
+    </tbody>
   </table>
 
   <script>
-    const data = JSON.parse(localStorage.getItem("reception_data") || "[]");
-    const tbody = document.querySelector("#list tbody");
+    function loadReceptionList() {
+      const data = JSON.parse(localStorage.getItem("receptionList") || "[]");
+      const tbody = document.querySelector("#receptionTable tbody");
+      tbody.innerHTML = "";
 
-    data.reverse().forEach(entry => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${new Date(entry.timestamp).toLocaleString("ja-JP")}</td>
-        <td>${entry.time}</td>
-        <td>${entry.owner}</td>
-        <td>${entry.pet}</td>
-        <td>${entry.card}</td>
-        <td>${entry.insurance}</td>
-      `;
-      tbody.appendChild(row);
-    });
+      data.slice().reverse().forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.timestamp}</td>
+          <td>${entry.owner}</td>
+          <td>${entry.pet}</td>
+          <td>${entry.id}</td>
+          <td>${entry.time}</td>
+          <td>${entry.insurance}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    loadReceptionList();
+    setInterval(loadReceptionList, 3000); // 3秒ごとに自動更新
   </script>
 </body>
 </html>
