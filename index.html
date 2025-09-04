@@ -1,34 +1,99 @@
+<!-- index.html - 受付フォーム -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>上桂動物病院 受付フォーム</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
+      font-family: sans-serif;
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: #f0f0f0;
+      padding: 1em;
+      font-size: 1.2em;
+      background: #f8f8f8;
     }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      font-size: 1.8em;
-      text-align: center;
-      padding: 1em 0;
+    label {
+      display: block;
+      margin-top: 1em;
     }
-    iframe {
+    input, select, button {
+      font-size: 1.2em;
       width: 100%;
-      height: calc(100vh - 70px);
+      padding: 0.5em;
+      margin-top: 0.5em;
+    }
+    button {
+      background: #2c3e50;
+      color: white;
       border: none;
+      margin-top: 1.5em;
     }
   </style>
 </head>
 <body>
-  <header>上桂動物病院 受付フォーム</header>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSctPGNU0tYkxF9cqVfKwWy6A3o9FZnHgdzyOn3IAr9WZB9R3w/viewform?embedded=true" allowfullscreen>
-  読み込んでいます…
-</iframe>
+  <h1>上桂動物病院 受付フォーム</h1>
+
+  <label>予約時間帯
+    <select id="time">
+      <option value="">選択してください</option>
+      <option>09:00〜09:30</option>
+      <option>09:30〜10:00</option>
+      <option>10:00〜10:30</option>
+      <option>10:30〜11:00</option>
+      <option>11:00〜11:30</option>
+      <option>11:30〜12:00</option>
+      <option>16:30〜17:00</option>
+      <option>17:00〜17:30</option>
+      <option>17:30〜18:00</option>
+      <option>18:00〜18:30</option>
+    </select>
+  </label>
+
+  <label>飼い主の苗字
+    <input id="owner" type="text" />
+  </label>
+
+  <label>動物の名前
+    <input id="pet" type="text" />
+  </label>
+
+  <label>診察券番号（任意）
+    <input id="card" type="text" />
+  </label>
+
+  <label>保険証提出
+    <select id="insurance">
+      <option value="">選択してください</option>
+      <option>提出した</option>
+      <option>提出していない</option>
+    </select>
+  </label>
+
+  <button onclick="submitForm()">受付する</button>
+
+  <script>
+    async function submitForm() {
+      const data = {
+        timestamp: new Date().toISOString(),
+        time: document.getElementById("time").value,
+        owner: document.getElementById("owner").value,
+        pet: document.getElementById("pet").value,
+        card: document.getElementById("card").value,
+        insurance: document.getElementById("insurance").value
+      };
+
+      const res = await fetch('data.json');
+      const existing = await res.json().catch(() => []);
+
+      const updated = [...existing, data];
+
+      // GitHub Pagesでは書き込み不可。本来はFirebaseやGitHub API経由で保存します。
+      alert("受付情報を記録しました（仮保存）\n一覧ページで確認できます");
+      localStorage.setItem("reception_data", JSON.stringify(updated));
+
+      location.reload();
+    }
+  </script>
 </body>
 </html>
