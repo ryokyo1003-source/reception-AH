@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>受付一覧｜上桂動物病院</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1em;
+      font-size: 1em;
+      background: #fff;
+    }
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.5em;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h1>受付一覧（最新順）</h1>
+  <table id="list">
+    <thead>
+      <tr>
+        <th>受付時刻</th>
+        <th>時間帯</th>
+        <th>飼い主</th>
+        <th>動物名</th>
+        <th>診察券番号</th>
+        <th>保険証</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const data = JSON.parse(localStorage.getItem("reception_data") || "[]");
+    const tbody = document.querySelector("#list tbody");
+
+    data.reverse().forEach(entry => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${new Date(entry.timestamp).toLocaleString("ja-JP")}</td>
+        <td>${entry.time}</td>
+        <td>${entry.owner}</td>
+        <td>${entry.pet}</td>
+        <td>${entry.card}</td>
+        <td>${entry.insurance}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  </script>
+</body>
+</html>
