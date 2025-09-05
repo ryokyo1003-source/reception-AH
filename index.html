@@ -62,6 +62,10 @@
       border-radius: 12px;
       cursor: pointer;
     }
+    #phoneInput {
+      margin-top: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -71,21 +75,16 @@
     <div class="form-section">
       <label for="time">ご予約時間帯</label>
       <div class="button-group" id="timeButtons">
-        <!-- 午前枠 -->
         <button type="button" class="selectable-button" data-period="am">9:00〜9:30</button>
         <button type="button" class="selectable-button" data-period="am">9:30〜10:00</button>
         <button type="button" class="selectable-button" data-period="am">10:00〜10:30</button>
         <button type="button" class="selectable-button" data-period="am">10:30〜11:00</button>
         <button type="button" class="selectable-button" data-period="am">11:00〜11:30</button>
         <button type="button" class="selectable-button" data-period="am">11:30〜12:00</button>
-
-        <!-- 午後枠 -->
         <button type="button" class="selectable-button" data-period="pm">16:30〜17:00</button>
         <button type="button" class="selectable-button" data-period="pm">17:00〜17:30</button>
         <button type="button" class="selectable-button" data-period="pm">17:30〜18:00</button>
         <button type="button" class="selectable-button" data-period="pm">18:00〜18:30</button>
-
-        <!-- 常に表示 -->
         <button type="button" class="selectable-button" data-period="all">予約なし</button>
       </div>
     </div>
@@ -104,8 +103,12 @@
       <label>診察券番号</label>
       <input type="text" id="id" placeholder="診察券をお持ちで番号が分かる場合はこちらに入力してください" />
       <div class="button-group" id="idStatus">
-        <button type="button" class="selectable-button">番号がわからない</button>
-        <button type="button" class="selectable-button">初診</button>
+        <button type="button" class="selectable-button" data-value="番号がわからない">番号がわからない</button>
+        <button type="button" class="selectable-button" data-value="初診">初診</button>
+      </div>
+      <div id="phoneInput">
+        <label for="phone">初診時にご登録されたお電話番号をご入力ください</label>
+        <input type="text" id="phone" placeholder="例：09012345678" />
       </div>
     </div>
 
@@ -121,12 +124,10 @@
   </form>
 
   <script>
-    // 時間帯に応じて午前/午後ボタンを出し分け
     window.addEventListener("DOMContentLoaded", () => {
       const now = new Date();
       const currentHour = now.getHours();
       const isMorning = currentHour < 14;
-
       document.querySelectorAll("#timeButtons .selectable-button").forEach(btn => {
         const period = btn.dataset.period;
         if (period === "am" && !isMorning) btn.style.display = "none";
@@ -134,28 +135,32 @@
       });
     });
 
-    // ボタン選択ロジック
     document.querySelectorAll(".button-group").forEach(group => {
       group.addEventListener("click", function(event) {
         if (event.target.classList.contains("selectable-button")) {
           group.querySelectorAll(".selectable-button").forEach(btn => btn.classList.remove("selected"));
           event.target.classList.add("selected");
+
+          if (group.id === "idStatus") {
+            const phoneInput = document.getElementById("phoneInput");
+            phoneInput.style.display = event.target.dataset.value === "番号がわからない" ? "block" : "none";
+          }
         }
       });
     });
 
-    // 受付データ保存
     document.getElementById("receptionForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
       const owner = document.getElementById("owner").value;
       const pet = document.getElementById("pet").value;
       const id = document.getElementById("id").value || document.querySelector("#idStatus .selected")?.textContent || "";
+      const phone = document.getElementById("phone").value || "";
       const time = document.querySelector("#timeButtons .selected")?.textContent || "";
       const insurance = document.querySelector("#insuranceButtons .selected")?.textContent || "";
       const timestamp = new Date().toLocaleString("ja-JP", { hour12: false });
 
-      const entry = { timestamp, owner, pet, id, time, insurance };
+      const entry = { timestamp, owner, pet, id: id + (phone ? `（TEL: ${phone}）` : ""), time, insurance };
       const list = JSON.parse(localStorage.getItem("receptionList") || "[]");
       list.push(entry);
       localStorage.setItem("receptionList", JSON.stringify(list));
@@ -163,6 +168,7 @@
       alert("受付が完了しました！");
       this.reset();
       document.querySelectorAll(".selected").forEach(btn => btn.classList.remove("selected"));
+      document.getElementById("phoneInput").style.display = "none";
     });
   </script>
 </body>
