@@ -1,97 +1,92 @@
+<!-- list.html 拡張版 -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>受付一覧 - 上桂動物病院</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>受付一覧と問診</title>
   <style>
     body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background: #f5f8fc;
-      padding: 20px;
-      color: #333;
+      font-family: sans-serif;
+      padding: 1rem;
     }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 30px;
-    }
-
     table {
-      width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      border-radius: 8px;
-      overflow: hidden;
+      width: 100%;
     }
-
     th, td {
-      padding: 14px;
-      text-align: center;
-      border-bottom: 1px solid #eee;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
     }
-
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f8fbff;
-    }
-
-    .refreshing {
-      text-align: center;
+    .monshin-button {
+      padding: 0.3rem 0.6rem;
       font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 15px;
+    }
+    .monshin-output {
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ddd;
     }
   </style>
 </head>
 <body>
-  <h1>受付一覧（上桂動物病院）</h1>
-  <div class="refreshing">最新の受付情報を自動更新しています...</div>
+  <h1>受付一覧</h1>
   <table id="receptionTable">
     <thead>
-      <tr>
-        <th>受付時間</th>
-        <th>ご家族様のご名字</th>
-        <th>動物さんのお名前</th>
-        <th>診察券番号</th>
-        <th>ご予約時間帯</th>
-        <th>保険証</th>
-      </tr>
+      <tr><th>受付時間</th><th>飼い主名</th><th>動物名</th><th>問診</th></tr>
     </thead>
     <tbody>
-      <!-- JavaScriptで表示 -->
+      <!-- JSで行を追加 -->
     </tbody>
   </table>
 
   <script>
-    function loadReceptionList() {
-      const data = JSON.parse(localStorage.getItem("receptionList") || "[]");
-      const tbody = document.querySelector("#receptionTable tbody");
-      tbody.innerHTML = "";
+    // 仮の受付データ
+    const receptionData = [
+      { rid: '20240906-0930', owner: '山田', pet: 'ポチ', time: '9:30' },
+      { rid: '20240906-0945', owner: '佐藤', pet: 'ミケ', time: '9:45' }
+    ];
 
-      data.slice().reverse().forEach(entry => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${entry.timestamp}</td>
-          <td>${entry.owner}</td>
-          <td>${entry.pet}</td>
-          <td>${entry.id}</td>
-          <td>${entry.time}</td>
-          <td>${entry.insurance}</td>
-        `;
-        tbody.appendChild(row);
-      });
+    const tbody = document.querySelector('#receptionTable tbody');
+    receptionData.forEach((item) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.time}</td>
+        <td>${item.owner}</td>
+        <td>${item.pet}</td>
+        <td>
+          <button class="monshin-button" onclick="loadMonshin('${item.rid}', this)">問診を表示</button>
+          <div class="monshin-output" id="out-${item.rid}" style="display:none"></div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    async function loadMonshin(rid, btn) {
+      const target = document.getElementById(`out-${rid}`);
+      if (target.style.display === 'block') {
+        target.style.display = 'none';
+        btn.textContent = '問診を表示';
+        return;
+      }
+      try {
+        const res = await fetch(`data/${rid}.json`);
+        if (!res.ok) throw new Error('No data');
+        const data = await res.json();
+        const lines = Object.entries(data).map(([k, v]) => {
+          if (Array.isArray(v)) return `【${k}】\n - ${v.join('\n - ')}`;
+          return `【${k}】${v}`;
+        });
+        target.textContent = lines.join('\n\n');
+        target.style.display = 'block';
+        btn.textContent = '問診を隠す';
+      } catch (e) {
+        target.textContent = '問診が未入力、またはデータが見つかりません';
+        target.style.display = 'block';
+      }
     }
-
-    loadReceptionList();
-    setInterval(loadReceptionList, 3000); // 3秒ごとに自動更新
   </script>
 </body>
 </html>
